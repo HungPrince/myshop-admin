@@ -1,15 +1,17 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ElementRef } from '@angular/core';
 
 @Component({
   selector: 'app-main',
   templateUrl: './main.component.html',
   styleUrls: ['./main.component.css']
 })
-export class MainComponent implements OnInit {
+export class MainComponent {
 
-  constructor() { }
+  constructor(private elementRef : ElementRef) { }
 
-  ngOnInit() {
+  ngAfterViewInit() {
+    let s = document.createElement('script');
+    s.src = "../assets/js/custom.js";
+    this.elementRef.nativeElement.appendChild(s);
   }
-
 }
