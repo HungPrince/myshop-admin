@@ -1,4 +1,5 @@
 export const SystemConstant = {
   USER_CURRENT: 'USER_CURRENT',
-  BASE_URL:'http://localhost:5000/'
+  REMEMBER_ACCOUNT: 'REMEMBER_ACCOUNT',
+  BASE_URL:'http://localhost:53348/'
 };

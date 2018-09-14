@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { DataService } from './data.service';
 import { SystemConstant } from '../constants/constant';
 import { User } from '../../models/user';
+import { Observable } from 'rxjs';
 
 let headers = new HttpHeaders({ 'content-type': 'application/x-www-form-urlencoded' })
 
@@ -17,15 +18,10 @@ export class AuthService {
     private dataService: DataService
   ) { }
 
-  login(userName: string, passWorld: string) {
-    let usr = "username=" + userName + "&&password" + passWorld;
-    this.dataService.postData("login", usr).subscribe(res => {
-      let data = "username=" + userName + "&&password" + passWorld + "&&grant_type=password";
-      this.httpClient.post('api/oauth/token', data, { headers: headers }).subscribe((result: any) => {
-        let user = new User(result.username, result.email, result.token, result.avatar);
-        localStorage.setItem(SystemConstant.USER_CURRENT, JSON.stringify(user));
-      });
-    });
+  login(userName: string, passWorld: string): Observable<any> {
+    let data = "username=" + userName + "&&password=" + passWorld + "&&grant_type=password";
+    let url = SystemConstant.BASE_URL + 'api/oauth/token';
+    return this.httpClient.post(url, data, { headers: headers });
   }
 
   logout() {

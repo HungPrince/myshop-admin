@@ -5,7 +5,9 @@ import { SystemConstant } from '../constants/constant';
 
 let headers = new HttpHeaders({ 'content-type': 'application/x-www-form-urlencoded' })
 
-@Injectable()
+@Injectable({
+  providedIn:'root'
+})
 export class DataService {
 
   constructor(private httpClient: HttpClient) { }

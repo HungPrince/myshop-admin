@@ -30,10 +30,12 @@
             ],
             "scripts": [
               "node_modules/jquery/dist/jquery.min.js",
+              "node_modules/jquery-ui-dist/jquery-ui.js",
               "node_modules/popper/index.js",
               "node_modules/bootstrap337/dist/js/bootstrap.min.js",
               "node_modules/fastclick/lib/fastclick.js",
-              "node_modules/nprogress/nprogress.js"
+              "node_modules/nprogress/nprogress.js",
+              "node_modules/smartresize.js/index.js"
             ]
           },
           "configurations": {

@@ -1,13 +1,15 @@
 export class User {
-  userName: string;
-  email: string;
-  token: string;
-  avatar: string;
+  FullName: string;
+  UserName: string;
+  Email: string;
+  Token: string;
+  Avatar: string;
 
-  public constructor(username: string, email: string, token: string, avatar: string) {
-    this.userName = username;
-    this.email = email;
-    this.token = token;
-    this.avatar = avatar;
+  public constructor(fullname: string, username: string, email: string, token: string, avatar: string) {
+    this.FullName = fullname;
+    this.UserName = username;
+    this.Email = email;
+    this.Token = token;
+    this.Avatar = avatar;
   }
 }
