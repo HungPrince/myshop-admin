@@ -5,7 +5,7 @@ import { LocalStorage } from '@ngx-pwa/local-storage';
 import { AuthService } from '../core/services/auth.service';
 import { SystemConstant } from '../core/constants/constant';
 import { User } from '../models/user';
-import { Router } from '@angular/router';
+import { Router, NavigationExtras } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -14,13 +14,11 @@ import { Router } from '@angular/router';
 })
 export class LoginComponent implements OnInit {
   loginForm: FormGroup;
-  user: UserLogin;
   constructor(
     private formBuilder: FormBuilder,
     private authService: AuthService,
     private router: Router,
     private localStorage: LocalStorage
-
   ) { }
 
   ngOnInit() {
@@ -42,20 +40,19 @@ export class LoginComponent implements OnInit {
   login() {
     this.authService.login(this.loginForm.value.UserName, this.loginForm.value.Password)
       .subscribe((result: any) => {
-        let user = new User(result.fullName, result.username, result.email, result.token, result.avatar);
+        let user = new User(result.fullName, result.username, result.email, result.access_token, result.avatar);
         localStorage.setItem(SystemConstant.USER_CURRENT, JSON.stringify(user));
-        console.log(this.loginForm);
         if (this.loginForm.value.Remember) {
           this.localStorage.setItem(SystemConstant.REMEMBER_ACCOUNT, this.loginForm.value).subscribe((data) => { console.log(data) });
-        }else{
-          this.localStorage.removeItem(SystemConstant.REMEMBER_ACCOUNT).subscribe(()=>{});
+        } else {
+          this.localStorage.removeItem(SystemConstant.REMEMBER_ACCOUNT).subscribe(() => { });
         }
-        this.router.navigate(['main/dashboard']);
+        let redirectUrl = this.authService.redirectUrl ? this.authService.redirectUrl : 'main/dashboard';
+        let navigationExtras: NavigationExtras = {
+          queryParamsHandling: 'preserve',
+          preserveFragment: true
+        };
+        this.router.navigate([redirectUrl], navigationExtras);
       });
   }
-}
-
-class UserLogin {
-  UserName: string;
-  Password: string;
 }

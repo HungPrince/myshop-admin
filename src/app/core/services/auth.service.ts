@@ -13,6 +13,7 @@ let headers = new HttpHeaders({ 'content-type': 'application/x-www-form-urlencod
 
 export class AuthService {
 
+  public redirectUrl: string;
   constructor(
     private httpClient: HttpClient,
     private dataService: DataService

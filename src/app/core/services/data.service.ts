@@ -3,7 +3,8 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { SystemConstant } from '../constants/constant';
 
-let headers = new HttpHeaders({ 'content-type': 'application/x-www-form-urlencoded' })
+let headers = new HttpHeaders({ 'content-type': 'application/x-www-form-urlencoded' });
+headers.append('accept', 'application/json');
 
 @Injectable({
   providedIn:'root'
@@ -12,18 +13,18 @@ export class DataService {
 
   constructor(private httpClient: HttpClient) { }
 
-  public postData(url: string, data?: any): Observable<any> {
-    let uri = SystemConstant.BASE_URL + url;
-    return this.httpClient.post(uri, data, { headers: headers });
+  public postData(uri: string, data?: any): Observable<any> {
+    let url = SystemConstant.BASE_URL + uri;
+    return this.httpClient.post(url, data, { headers: headers });
   }
 
-  public getData(url: string): Observable<any> {
-    let uri = SystemConstant.BASE_URL + url;
-    return this.httpClient.get(uri, { headers: headers });
+  public getData(uri: string): Observable<any> {
+    let url = SystemConstant.BASE_URL + uri;
+    return this.httpClient.get(url, { headers: headers });
   }
 
-  public deleteData(url: string): Observable<any> {
-    let uri = SystemConstant.BASE_URL + url;
-    return this.httpClient.delete(uri, { headers: headers });
+  public deleteData(uri: string): Observable<any> {
+    let url = SystemConstant.BASE_URL + uri;
+    return this.httpClient.delete(url, { headers: headers });
   }
 }
