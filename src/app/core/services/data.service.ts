@@ -3,11 +3,10 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { SystemConstant } from '../constants/constant';
 
-let headers = new HttpHeaders({ 'content-type': 'application/x-www-form-urlencoded' });
-headers.append('accept', 'application/json');
+let headers = new HttpHeaders({ 'Content-Type': 'application/json' });
 
 @Injectable({
-  providedIn:'root'
+  providedIn: 'root'
 })
 export class DataService {
 
@@ -16,6 +15,11 @@ export class DataService {
   public postData(uri: string, data?: any): Observable<any> {
     let url = SystemConstant.BASE_URL + uri;
     return this.httpClient.post(url, data, { headers: headers });
+  }
+
+  public putData(uri: string, data?: any): Observable<any> {
+    let url = SystemConstant.BASE_URL + uri;
+    return this.httpClient.put(url, data, { headers: headers });
   }
 
   public getData(uri: string): Observable<any> {

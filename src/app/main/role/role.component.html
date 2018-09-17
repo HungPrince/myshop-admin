@@ -20,18 +20,8 @@
     <div class="x_panel">
       <div class="x_title">
         <ul class="nav navbar-right panel_toolbox">
-          <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
-          </li>
-          <li class="dropdown">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
-            <ul class="dropdown-menu" role="menu">
-              <li><a href="#">Settings 1</a>
-              </li>
-              <li><a href="#">Settings 2</a>
-              </li>
-            </ul>
-          </li>
-          <li><a class="close-link"><i class="fa fa-close"></i></a>
+          <li>
+            <button class="btn btn-success" (click)="openModal(template)">Add</button>
           </li>
         </ul>
         <div class="clearfix"></div>
@@ -43,7 +33,7 @@
             <tr>
               <th>Mã</th>
               <th>Tên</th>
-              <th></th>
+              <th>Action</th>
             </tr>
           </thead>
           <tbody>
@@ -65,3 +55,52 @@
     </div>
   </div>
 </div>
+
+<ng-template #template>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left">Form Role</h4>
+    <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <form [formGroup]="formRole" class="form-horizontal form-label-left" novalidate (ngSubmit)="saveChange()">
+      <input type="hidden" id="Id" formControlName="Id" name="Id" class="form-control col-md-7 col-xs-12">
+      <div class="form-group">
+        <label class="control-label col-md-3 col-sm-3 col-xs-12">Name <span class="required">*</span>
+        </label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+          <input type="text" id="name" formControlName="Name" class="form-control col-md-7 col-xs-12">
+        </div>
+        <div class="col-md-offset-3 col-md-6 col-sm-6 col-xs-12" *ngIf="isError('Name')">
+            <div [hidden]="!isErrorRequired('Name')" class="alert alert-danger">
+                Name is required field!
+            </div>
+            <div [hidden]="!isErrorMinLength('Name')" class="alert alert-danger">
+                Name is least at 4 characters long!
+            </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="control-label col-md-3 col-sm-3 col-xs-12">Description<span class="required">*</span>
+        </label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+          <input type="text" name="description" formControlName="Description" required="required" class="form-control col-md-7 col-xs-12">
+        </div>
+        <div class="col-md-offset-3 col-md-6 col-sm-6 col-xs-12" *ngIf="isError('Description')">
+            <div [hidden]="!isErrorRequired('Description')" class="alert alert-danger">
+                Name is required field!
+            </div>
+        </div>
+      </div>
+      <div class="ln_solid"></div>
+      <div class="form-group">
+        <div class="col-md-6 col-sm-6 col-xs-12 col-md-offset-3">
+          <button class="btn btn-primary" type="button" (click)="modalRef.hide()">Cancel</button>
+          <button class="btn btn-primary" type="reset" (click)="reset()">Reset</button>
+          <button type="submit" class="btn btn-success" [disabled]="!formRole.valid">Submit</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</ng-template>

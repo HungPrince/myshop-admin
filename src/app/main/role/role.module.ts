@@ -2,8 +2,8 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RoleComponent } from './role.component';
 import { Routes, RouterModule } from '@angular/router';
-import { PaginationModule } from 'ngx-bootstrap/pagination';
-import { FormsModule } from '@angular/forms';
+import { PaginationModule, ModalModule  } from 'ngx-bootstrap';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 const roleRoutes: Routes = [
   {
@@ -19,7 +19,9 @@ const roleRoutes: Routes = [
     CommonModule,
     RouterModule.forChild(roleRoutes),
     FormsModule,
-    PaginationModule.forRoot()
+    ReactiveFormsModule,
+    PaginationModule.forRoot(),
+    ModalModule.forRoot()
   ],
   declarations: [RoleComponent]
 })
