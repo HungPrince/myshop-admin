@@ -9,12 +9,12 @@ import { SystemConstant } from '../../constants/constant';
 
 export class JwtInterceptor implements HttpInterceptor {
 
-  intercept(request: HttpRequest<any>, next: HttpHandler):Observable<any>{
+  intercept(request: HttpRequest<any>, next: HttpHandler): Observable<any> {
     let currentUser = JSON.parse(localStorage.getItem(SystemConstant.USER_CURRENT));
-    if(currentUser && currentUser.Token){
+    if (currentUser && currentUser.Token) {
       request = request.clone({
-        setHeaders:{
-          Authorization:`Bearer ${currentUser.Token}`
+        setHeaders: {
+          Authorization: `Bearer ${currentUser.Token}`
         }
       })
     }

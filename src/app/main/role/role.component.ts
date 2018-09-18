@@ -1,3 +1,4 @@
+import { map } from 'rxjs/operators';
 import { Component, OnInit, TemplateRef } from '@angular/core';
 import { DataService } from '../../core/services/data.service';
 import { BsModalService } from 'ngx-bootstrap/modal';
@@ -19,6 +20,7 @@ export class RoleComponent implements OnInit {
   totalRows: number;
   filter: string = "";
   roles: any;
+  roleCurrent: any;
   modalRef: BsModalRef;
   formRole: FormGroup;
 
@@ -53,10 +55,6 @@ export class RoleComponent implements OnInit {
     this.loadDataRole();
   }
 
-  openModal(template: TemplateRef<any>) {
-    this.modalRef = this.modalService.show(template);
-  }
-
   isError(nameInput: string) {
     return this.formHelper.isError(this.formRole, nameInput);
   }
@@ -72,16 +70,18 @@ export class RoleComponent implements OnInit {
   saveChange() {
     if (this.formRole.valid) {
       let data = JSON.stringify(this.formRole.value);
-      let id = this.formRole.value.id;
+      let id = this.formRole.value.Id;
       let uri = id ? "api/role/update" : "api/role/add";
+      let index = this.roles.findIndex(x => x.Id == id);
       if (id) {
         this.dataService.putData(uri, data).subscribe(res => {
-          this.roles.push(this.formRole.value);
+          this.roles[index] = { Id: res.Id, Name: res.Name, Description: res.Description };
+          this.modalRef.hide();
           this.notificationService.printSuccessMessage(MessageContstants.UPDATED_OK_MSG);
         }, err => console.log(err));
       } else {
         this.dataService.postData(uri, data).subscribe(res => {
-          this.roles.push(this.formRole.value);
+          this.roles.push({ Id: res.Id, Name: res.Name, Description: res.Description });
           this.totalRows++;
           this.modalRef.hide();
           this.notificationService.printSuccessMessage(MessageContstants.CREATED_OK_MSG);
@@ -89,4 +89,34 @@ export class RoleComponent implements OnInit {
       }
     }
   }
+
+  delete() {
+    if (this.roleCurrent.Id) {
+      let id = this.roleCurrent.Id;
+      let uri = `api/role/delete?id=${id}`;
+      this.dataService.deleteData(uri).subscribe(id => {
+        if (id) {
+          console.log(this.roles);
+          this.roles = this.roles.filter(x => x.Id != id);
+          console.log(this.roles);
+          this.totalRows--;
+        }
+        this.modalRef.hide();
+        this.notificationService.printSuccessMessage(MessageContstants.DELETED_OK_MSG);
+      }, err => console.log(err));
+    }
+  }
+
+  openModal(template: TemplateRef<any>, role: any) {
+    if (role) {
+      this.formRole.setValue(role);
+    }
+    this.modalRef = this.modalService.show(template);
+  }
+
+  openModalConfirm(template: TemplateRef<any>, role: any) {
+    this.modalRef = this.modalService.show(template);
+    this.roleCurrent = role;
+  }
 }
+
