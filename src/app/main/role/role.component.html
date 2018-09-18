@@ -6,9 +6,9 @@
   <div class="title_right">
     <div class="col-md-5 col-sm-5 col-xs-12 form-group pull-right top_search">
       <div class="input-group">
-        <input type="text" class="form-control" placeholder="Gõ tên quyền...">
+        <input type="text" class="form-control" (keyup.enter)="loadDataRole()"  [(ngModel)]="filter" name="filter" placeholder="Gõ tên quyền...">
         <span class="input-group-btn">
-          <button class="btn btn-default" type="button">Tìm!</button>
+          <button class="btn btn-default" type="button" (click)="loadDataRole()">Tìm!</button>
         </span>
       </div>
     </div>
@@ -106,8 +106,15 @@
 </ng-template>
 
 <ng-template #templateDelete>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left">Confirm Delete</h4>
+    <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
   <div class="modal-body text-center">
-    <p>Do you want delete this record?</p>
+    <h4>Do you want delete this record?</h4>
+    <div class="ln_solid"></div>
     <button type="button" class="btn btn-default" (click)="delete()">Yes</button>
     <button type="button" class="btn btn-primary" (click)="modalRef.hide()">No</button>
   </div>

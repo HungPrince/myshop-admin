@@ -41,7 +41,7 @@ export class RoleComponent implements OnInit {
     });
   }
 
-  private loadDataRole() {
+  loadDataRole() {
     this.dataService.getData(`api/role/getlistpaging?page=${this.pageIndex}&pageSize=${this.pageSize}&filter=${this.filter}`).subscribe(data => {
       this.roles = data.Items;
       this.totalRows = data.TotalRows;
@@ -96,9 +96,7 @@ export class RoleComponent implements OnInit {
       let uri = `api/role/delete?id=${id}`;
       this.dataService.deleteData(uri).subscribe(id => {
         if (id) {
-          console.log(this.roles);
           this.roles = this.roles.filter(x => x.Id != id);
-          console.log(this.roles);
           this.totalRows--;
         }
         this.modalRef.hide();

@@ -2,6 +2,8 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { UserComponent } from './user.component';
 import { Routes, RouterModule } from '@angular/router';
+import { PaginationModule, ModalModule  } from 'ngx-bootstrap';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 const userRoutes: Routes = [
   {
@@ -15,7 +17,11 @@ const userRoutes: Routes = [
 @NgModule({
   imports: [
     CommonModule,
-    RouterModule.forChild(userRoutes)
+    RouterModule.forChild(userRoutes),
+    FormsModule,
+    ReactiveFormsModule,
+    PaginationModule.forRoot(),
+    ModalModule.forRoot()
   ],
   declarations: [UserComponent]
 })

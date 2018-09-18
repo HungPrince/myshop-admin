@@ -1,3 +1,225 @@
-<p>
-  user works!
-</p>
+<div class="page-title">
+  <div class="title_left">
+    <h3>Danh sách người dùng</h3>
+  </div>
+
+  <div class="title_right">
+    <div class="col-md-5 col-sm-5 col-xs-12 form-group pull-right top_search">
+      <div class="input-group">
+        <input type="text" class="form-control" (keyup.enter)="loadData()" [(ngModel)]="filter" name="filter"
+          placeholder="Gõ tên quyền...">
+        <span class="input-group-btn">
+          <button class="btn btn-default" type="button" (click)="loadData()">Tìm!</button>
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="clearfix"></div>
+<div class="row">
+  <div class="col-md-12 col-sm-12 col-xs-12">
+    <div class="x_panel">
+      <div class="x_title">
+        <ul class="nav navbar-right panel_toolbox">
+          <li>
+            <button class="btn btn-success" (click)="openModal(template, null)">Add</button>
+          </li>
+        </ul>
+        <div class="clearfix"></div>
+      </div>
+      <div class="x_content">
+
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th>STT</th>
+              <th>Tên</th>
+              <th>Email</th>
+              <th>Số điện thoại</th>
+              <th>Giới tính</th>
+              <th>Ngày sinh</th>
+              <th>Địa chỉ</th>
+              <th>Avatar</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let entity of entities let i = index">
+              <td>{{i+1}}</td>
+              <td>{{entity.FullName}}</td>
+              <td>{{entity.Email}}</td>
+              <td>{{entity.PhoneNumber}}</td>
+              <td>{{entity.Gender}}</td>
+              <td>{{entity.BirthDay}}</td>
+              <td>{{entity.Address}}</td>
+              <td><img src="{{entity.Avatar}}" alt=""></td>
+              <td>{{entity.status}}</td>
+              <td>
+                <button class="btn btn-primary" (click)="openModal(template, entity)"><i class="fa fa-pencil-square-o"></i></button>
+                <button class="btn btn-danger" (click)="openModalConfirm(templateDelete, entity)"><i class="fa fa-trash"></i></button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="col-md-12 cold-xs-12 col-12">
+          <pagination [totalItems]="totalRows" [itemsPerPage]="pageSize" [(ngModel)]="pageIndex" (pageChanged)="pageChanged($event)"></pagination>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #template>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left">Form User</h4>
+    <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <form [formGroup]="formEntity" class="form-horizontal form-label-left" novalidate (ngSubmit)="saveChange()">
+
+      <input type="hidden" id="Id" formControlName="Id" name="Id" class="form-control col-md-7 col-xs-12">
+      <div class="form-group">
+        <label class="control-label col-md-3 col-sm-3 col-xs-12">FullName<span class="required">*</span>
+        </label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+          <input type="text" name="FullName" formControlName="FullName" required="required" class="form-control col-md-7 col-xs-12">
+        </div>
+        <div class="col-md-offset-3 col-md-6 col-sm-6 col-xs-12" *ngIf="isError('FullName')">
+          <div [hidden]="!isErrorRequired('FullName')" class="alert alert-danger">
+            FullName is required field!
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="control-label col-md-3 col-sm-3 col-xs-12">Email<span class="required">*</span>
+        </label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+          <input type="text" name="Email" formControlName="Email" required="required" class="form-control col-md-7 col-xs-12">
+        </div>
+        <div class="col-md-offset-3 col-md-6 col-sm-6 col-xs-12" *ngIf="isError('Email')">
+          <div [hidden]="!isErrorRequired('Email')" class="alert alert-danger">
+            Email is required field!
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="control-label col-md-3 col-sm-3 col-xs-12">Phone <span class="required">*</span>
+        </label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+          <input type="text" id="" formControlName="PhoneNumber" class="form-control col-md-7 col-xs-12">
+        </div>
+        <div class="col-md-offset-3 col-md-6 col-sm-6 col-xs-12" *ngIf="isError('PhoneNumber')">
+          <div [hidden]="!isErrorRequired('PhoneNumber')" class="alert alert-danger">
+            PhoneNumber is required field!
+          </div>
+          <div [hidden]="!isErrorMinLength('PhoneNumber')" class="alert alert-danger">
+            PhoneNumber is least at 4 characters long!
+          </div>
+        </div>
+      </div>
+
+
+
+      <div class="form-group">
+        <label class="control-label col-md-3 col-sm-3 col-xs-12">Gender<span class="required">*</span>
+        </label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+          <input type="text" name="Gender" formControlName="Gender" required="required" class="form-control col-md-7 col-xs-12">
+        </div>
+        <div class="col-md-offset-3 col-md-6 col-sm-6 col-xs-12" *ngIf="isError('Gender')">
+          <div [hidden]="!isErrorRequired('Gender')" class="alert alert-danger">
+            Gender is required field!
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="control-label col-md-3 col-sm-3 col-xs-12">BirthDay <span class="required">*</span>
+        </label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+          <input type="text" id="" formControlName="BirthDay" class="form-control col-md-7 col-xs-12">
+        </div>
+        <div class="col-md-offset-3 col-md-6 col-sm-6 col-xs-12" *ngIf="isError('BirthDay')">
+          <div [hidden]="!isErrorRequired('BirthDay')" class="alert alert-danger">
+            BirthDay is required field!
+          </div>
+          <div [hidden]="!isErrorMinLength('BirthDay')" class="alert alert-danger">
+            BirthDay is least at 4 characters long!
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="control-label col-md-3 col-sm-3 col-xs-12">Address<span class="required">*</span>
+        </label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+          <input type="text" name="Address" formControlName="Address" required="required" class="form-control col-md-7 col-xs-12">
+        </div>
+        <div class="col-md-offset-3 col-md-6 col-sm-6 col-xs-12" *ngIf="isError('Address')">
+          <div [hidden]="!isErrorRequired('Address')" class="alert alert-danger">
+            Address is required field!
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="control-label col-md-3 col-sm-3 col-xs-12">Avatar <span class="required">*</span>
+        </label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+          <input type="text" id="" formControlName="Avatar" class="form-control col-md-7 col-xs-12">
+        </div>
+        <div class="col-md-offset-3 col-md-6 col-sm-6 col-xs-12" *ngIf="isError('Avatar')">
+          <div [hidden]="!isErrorRequired('Avatar')" class="alert alert-danger">
+            Avatar is required field!
+          </div>
+          <div [hidden]="!isErrorMinLength('Avatar')" class="alert alert-danger">
+            Avatar is least at 4 characters long!
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="control-label col-md-3 col-sm-3 col-xs-12">Status<span class="required">*</span>
+        </label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+          <input type="text" name="Status" formControlName="Status" required="required" class="form-control col-md-7 col-xs-12">
+        </div>
+        <div class="col-md-offset-3 col-md-6 col-sm-6 col-xs-12" *ngIf="isError('Status')">
+          <div [hidden]="!isErrorRequired('Status')" class="alert alert-danger">
+            Status is required field!
+          </div>
+        </div>
+      </div>
+
+      <div class="ln_solid"></div>
+      <div class="form-group">
+        <div class="col-md-6 col-sm-6 col-xs-12 col-md-offset-3">
+          <button class="btn btn-primary" type="button" (click)="modalRef.hide()">Cancel</button>
+          <button class="btn btn-primary" type="reset" (click)="reset()">Reset</button>
+          <button type="submit" class="btn btn-success" [disabled]="!formEntity.valid">Submit</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</ng-template>
+
+<ng-template #templateDelete>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left">Confirm Delete</h4>
+    <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body text-center">
+    <h4>Do you want delete this record?</h4>
+    <div class="ln_solid"></div>
+    <button type="button" class="btn btn-default" (click)="delete()">Yes</button>
+    <button type="button" class="btn btn-primary" (click)="modalRef.hide()">No</button>
+  </div>
+</ng-template>
