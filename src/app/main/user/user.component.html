@@ -96,6 +96,32 @@
       </div>
 
       <div class="form-group">
+        <label class="control-label col-md-3 col-sm-3 col-xs-12">UserName<span class="required">*</span>
+        </label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+          <input type="text" name="UserName" formControlName="UserName" required="required" class="form-control col-md-7 col-xs-12">
+        </div>
+        <div class="col-md-offset-3 col-md-6 col-sm-6 col-xs-12" *ngIf="isError('UserName')">
+          <div [hidden]="!isErrorRequired('UserName')" class="alert alert-danger">
+            UserName is required field!
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="control-label col-md-3 col-sm-3 col-xs-12">Password<span class="required">*</span>
+        </label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+          <input type="password" name="Password" formControlName="Password" required="required" class="form-control col-md-7 col-xs-12">
+        </div>
+        <div class="col-md-offset-3 col-md-6 col-sm-6 col-xs-12" *ngIf="isError('Password')">
+          <div [hidden]="!isErrorRequired('Password')" class="alert alert-danger">
+            Password is required field!
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
         <label class="control-label col-md-3 col-sm-3 col-xs-12">Email<span class="required">*</span>
         </label>
         <div class="col-md-6 col-sm-6 col-xs-12">
@@ -112,7 +138,7 @@
         <label class="control-label col-md-3 col-sm-3 col-xs-12">Phone <span class="required">*</span>
         </label>
         <div class="col-md-6 col-sm-6 col-xs-12">
-          <input type="text" id="" formControlName="PhoneNumber" class="form-control col-md-7 col-xs-12">
+          <input type="text" id="PhoneNumber" formControlName="PhoneNumber" class="form-control col-md-7 col-xs-12">
         </div>
         <div class="col-md-offset-3 col-md-6 col-sm-6 col-xs-12" *ngIf="isError('PhoneNumber')">
           <div [hidden]="!isErrorRequired('PhoneNumber')" class="alert alert-danger">
@@ -123,8 +149,6 @@
           </div>
         </div>
       </div>
-
-
 
       <div class="form-group">
         <label class="control-label col-md-3 col-sm-3 col-xs-12">Gender<span class="required">*</span>
@@ -143,7 +167,7 @@
         <label class="control-label col-md-3 col-sm-3 col-xs-12">BirthDay <span class="required">*</span>
         </label>
         <div class="col-md-6 col-sm-6 col-xs-12">
-          <input type="text" id="" formControlName="BirthDay" class="form-control col-md-7 col-xs-12">
+          <input type="text" id="BirthDay" formControlName="BirthDay" class="form-control col-md-7 col-xs-12">
         </div>
         <div class="col-md-offset-3 col-md-6 col-sm-6 col-xs-12" *ngIf="isError('BirthDay')">
           <div [hidden]="!isErrorRequired('BirthDay')" class="alert alert-danger">
@@ -172,7 +196,7 @@
         <label class="control-label col-md-3 col-sm-3 col-xs-12">Avatar <span class="required">*</span>
         </label>
         <div class="col-md-6 col-sm-6 col-xs-12">
-          <input type="text" id="" formControlName="Avatar" class="form-control col-md-7 col-xs-12">
+          <input type="text" id="Avatar" formControlName="Avatar" class="form-control col-md-7 col-xs-12">
         </div>
         <div class="col-md-offset-3 col-md-6 col-sm-6 col-xs-12" *ngIf="isError('Avatar')">
           <div [hidden]="!isErrorRequired('Avatar')" class="alert alert-danger">
@@ -196,6 +220,20 @@
           </div>
         </div>
       </div>
+
+      <div class="form-group">
+        <label class="control-label col-md-3 col-sm-3 col-xs-12">Roles<span class="required">*</span>
+        </label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+          <input type="text" name="Roles" formControlName="Roles" required="required" class="form-control col-md-7 col-xs-12">
+        </div>
+        <div class="col-md-offset-3 col-md-6 col-sm-6 col-xs-12" *ngIf="isError('Roles')">
+          <div [hidden]="!isErrorRequired('Roles')" class="alert alert-danger">
+            Roles is required field!
+          </div>
+        </div>
+      </div>
+
 
       <div class="ln_solid"></div>
       <div class="form-group">

@@ -37,13 +37,16 @@ export class UserComponent implements OnInit {
     this.formEntity = this.formBuilder.group({
       Id: [''],
       FullName: ['', [Validators.required, Validators.minLength(4)]],
+      UserName: ['', [Validators.required, Validators.minLength(6)]],
+      Password: ['', Validators.required],
       Email: ['', Validators.required],
       PhoneNumber: ['',],
       Gender: ['',],
       BirthDay: ['',],
       Address: ['',],
       Avatar: ['',],
-      Status: ['',]
+      Status: ['',],
+      Roles: ['Admin']
     });
   }
 
@@ -53,6 +56,7 @@ export class UserComponent implements OnInit {
       this.totalRows = data.TotalRows;
       this.pageIndex = data.PageIndex;
       this.pageSize = data.PageSize;
+      console.log(this.entities);
     })
   }
 
@@ -75,7 +79,9 @@ export class UserComponent implements OnInit {
 
   saveChange() {
     if (this.formEntity.valid) {
-      let data = JSON.stringify(this.formEntity.value);
+      this.formEntity.value.roles = [{ Admin: "Admin" }];
+
+      let data: any = JSON.stringify(this.formEntity.value);
       let id = this.formEntity.value.Id;
       let uri = id ? "api/user/update" : "api/user/add";
       let index = this.entities.findIndex(x => x.Id == id);
@@ -87,7 +93,7 @@ export class UserComponent implements OnInit {
         }, err => console.log(err));
       } else {
         this.dataService.postData(uri, data).subscribe(res => {
-          this.entities.push({ Id: res.Id, Name: res.Name, Description: res.Description });
+          this.entities.push(res);
           this.totalRows++;
           this.modalRef.hide();
           this.notificationService.printSuccessMessage(MessageContstants.CREATED_OK_MSG);
@@ -113,7 +119,6 @@ export class UserComponent implements OnInit {
 
   openModal(template: TemplateRef<any>, entity: any) {
     if (entity) {
-      console.log(entity);
       this.formEntity.setValue(
         {
           Id: entity.Id,
@@ -124,7 +129,10 @@ export class UserComponent implements OnInit {
           Status: entity.Status,
           Gender: entity.Gender,
           Avatar: entity.Avatar,
-          Address: entity.Address
+          Address: entity.Address,
+          UserName: entity.UserName,
+          Password: entity.Password,
+          Roles: "Admin"
         }
       );
     }
