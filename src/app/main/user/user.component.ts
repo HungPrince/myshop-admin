@@ -1,5 +1,5 @@
 import { map } from 'rxjs/operators';
-import { Component, OnInit, TemplateRef } from '@angular/core';
+import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { DataService } from '../../core/services/data.service';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
@@ -7,6 +7,8 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { FormHelper } from '../../core/helpers/form.helper';
 import { NotificationService } from '../../core/services/notification.service';
 import { MessageContstants } from '../../core/constants/messages';
+import { BsDatepickerDirective } from 'ngx-bootstrap/datepicker';
+import { BsDatepickerConfig } from 'ngx-bootstrap/datepicker';
 
 @Component({
   selector: 'app-user',
@@ -24,6 +26,14 @@ export class UserComponent implements OnInit {
   modalRef: BsModalRef;
   formEntity: FormGroup;
 
+  bsValue = new Date();
+  bsConfig: Partial<BsDatepickerConfig>;
+  
+  @ViewChild(BsDatepickerDirective) bsDatepicker: BsDatepickerDirective;
+
+  dropdownList = [];
+  selectedItems = [];
+  dropdownSettings = {};
   constructor(
     private dataService: DataService,
     private modalService: BsModalService,
@@ -34,6 +44,12 @@ export class UserComponent implements OnInit {
 
   ngOnInit() {
     this.loadData();
+    this.initDropDownList();
+    this.loadAllRoles();
+    this.initForm();
+  }
+
+  initForm() {
     this.formEntity = this.formBuilder.group({
       Id: [''],
       FullName: ['', [Validators.required, Validators.minLength(4)]],
@@ -50,6 +66,18 @@ export class UserComponent implements OnInit {
     });
   }
 
+  initDropDownList() {
+    this.dropdownSettings = {
+      singleSelection: false,
+      idField: 'item_id',
+      textField: 'item_text',
+      selectAllText: 'Select All',
+      unSelectAllText: 'UnSelect All',
+      itemsShowLimit: 10,
+      allowSearchFilter: true
+    };
+  }
+
   loadData() {
     this.dataService.getData(`api/user/getlistpaging?page=${this.pageIndex}&pageSize=${this.pageSize}&filter=${this.filter}`).subscribe(data => {
       this.entities = data.Items;
@@ -57,6 +85,17 @@ export class UserComponent implements OnInit {
       this.pageIndex = data.PageIndex;
       this.pageSize = data.PageSize;
       console.log(this.entities);
+    })
+  }
+
+  loadAllRoles() {
+    this.dataService.getData(`api/role/GetListPaging?page=0&pageSize=${this.pageSize}&filter=${this.filter}`).subscribe(data => {
+      if(data){
+        data.forEach(item => {
+          
+          this.dropdownList.push({item_id: item.Name, item_text: item.Description});
+        });
+      }
     })
   }
 

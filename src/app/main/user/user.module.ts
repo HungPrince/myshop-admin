@@ -2,8 +2,9 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { UserComponent } from './user.component';
 import { Routes, RouterModule } from '@angular/router';
-import { PaginationModule, ModalModule  } from 'ngx-bootstrap';
+import { PaginationModule, ModalModule , BsDatepickerModule  } from 'ngx-bootstrap';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
 
 const userRoutes: Routes = [
   {
@@ -21,7 +22,9 @@ const userRoutes: Routes = [
     FormsModule,
     ReactiveFormsModule,
     PaginationModule.forRoot(),
-    ModalModule.forRoot()
+    ModalModule.forRoot(),
+    NgMultiSelectDropDownModule.forRoot(),
+    BsDatepickerModule.forRoot()
   ],
   declarations: [UserComponent]
 })
