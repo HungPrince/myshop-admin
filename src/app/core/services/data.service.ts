@@ -31,4 +31,9 @@ export class DataService {
     let url = SystemConstant.BASE_URL + uri;
     return this.httpClient.delete(url, { headers: headers });
   }
+
+  public postFile(uri: string, data?: any) {
+    let url = SystemConstant.BASE_URL + uri;
+    return this.httpClient.post(url, data);
+  }
 }

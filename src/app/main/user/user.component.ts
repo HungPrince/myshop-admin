@@ -1,5 +1,5 @@
 import { map } from 'rxjs/operators';
-import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { Component, OnInit, TemplateRef, ViewChild, ElementRef, ViewChildren, ViewContainerRef } from '@angular/core';
 import { DataService } from '../../core/services/data.service';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
@@ -9,6 +9,9 @@ import { NotificationService } from '../../core/services/notification.service';
 import { MessageContstants } from '../../core/constants/messages';
 import { BsDatepickerDirective } from 'ngx-bootstrap/datepicker';
 import { BsDatepickerConfig } from 'ngx-bootstrap/datepicker';
+import * as moment from "moment";
+import { PasswordValidator } from '../../core/helpers/validators/password.validator';
+import { UploadService } from '../../core/services/upload/upload.service';
 
 @Component({
   selector: 'app-user',
@@ -28,18 +31,26 @@ export class UserComponent implements OnInit {
 
   bsValue = new Date();
   bsConfig: Partial<BsDatepickerConfig>;
-  
+  private avatar: ElementRef;
   @ViewChild(BsDatepickerDirective) bsDatepicker: BsDatepickerDirective;
-
+  @ViewChild('avatar') set content(content: ElementRef) {
+    this.avatar = content;
+  }
   dropdownList = [];
   selectedItems = [];
   dropdownSettings = {};
+
+  private emailRegex = "^[a-z0-9]+(\.[_a-z0-9]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,15})$";
+  private phoneRegex = "^(01[2689]|09)[0-9]{8}$"
+  private passwordRegex = "(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[$@$!%*?&])[A-Za-z\d$@$!%*?&].{8,}";
   constructor(
     private dataService: DataService,
     private modalService: BsModalService,
     private formBuilder: FormBuilder,
     private formHelper: FormHelper,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private uploadService: UploadService,
+    private vcRef: ViewContainerRef
   ) { }
 
   ngOnInit() {
@@ -53,24 +64,25 @@ export class UserComponent implements OnInit {
     this.formEntity = this.formBuilder.group({
       Id: [''],
       FullName: ['', [Validators.required, Validators.minLength(4)]],
-      UserName: ['', [Validators.required, Validators.minLength(6)]],
-      Password: ['', Validators.required],
-      Email: ['', Validators.required],
-      PhoneNumber: ['',],
-      Gender: ['',],
+      UserName: ['', [Validators.required, Validators.minLength(4)]],
+      Email: ['', [Validators.required, Validators.pattern(this.emailRegex)]],
+      Password: ['', [Validators.required]],
+      ConfirmPassword: ['', Validators.required],
+      PhoneNumber: ['', Validators.pattern(this.phoneRegex)],
+      Gender: [true],
       BirthDay: ['',],
       Address: ['',],
       Avatar: ['',],
       Status: ['',],
-      Roles: ['Admin']
+      Roles: []
     });
   }
 
   initDropDownList() {
     this.dropdownSettings = {
       singleSelection: false,
-      idField: 'item_id',
-      textField: 'item_text',
+      idField: 'Name',
+      textField: 'Description',
       selectAllText: 'Select All',
       unSelectAllText: 'UnSelect All',
       itemsShowLimit: 10,
@@ -90,11 +102,8 @@ export class UserComponent implements OnInit {
 
   loadAllRoles() {
     this.dataService.getData(`api/role/GetListPaging?page=0&pageSize=${this.pageSize}&filter=${this.filter}`).subscribe(data => {
-      if(data){
-        data.forEach(item => {
-          
-          this.dropdownList.push({item_id: item.Name, item_text: item.Description});
-        });
+      if (data) {
+        this.dropdownList = data;
       }
     })
   }
@@ -114,6 +123,18 @@ export class UserComponent implements OnInit {
 
   isErrorMinLength(nameInput: string) {
     return this.formHelper.isErrorMinLength(this.formEntity, nameInput);
+  }
+
+  isErrorPattern(nameInput: string) {
+    return this.formHelper.isErrorPattern(this.formEntity, nameInput);
+  }
+
+  UploadImage() {
+    let fi = this.avatar.nativeElement;
+    console.log(fi.files);
+    if (fi.files.length > 0) {
+      this.uploadService.postWithFile('/api/upload/saveImage?type=avatar', null, fi.files)
+    }
   }
 
   saveChange() {
@@ -157,13 +178,15 @@ export class UserComponent implements OnInit {
   }
 
   openModal(template: TemplateRef<any>, entity: any) {
+    this.vcRef.createEmbeddedView(template, this.avatar);
+
     if (entity) {
       this.formEntity.setValue(
         {
           Id: entity.Id,
           FullName: entity.FullName,
           PhoneNumber: entity.PhoneNumber,
-          BirthDay: entity.BirthDay,
+          BirthDay: moment(entity.BirthDay).format("DD/MM/YYYY"),
           Email: entity.Email,
           Status: entity.Status,
           Gender: entity.Gender,
@@ -171,11 +194,15 @@ export class UserComponent implements OnInit {
           Address: entity.Address,
           UserName: entity.UserName,
           Password: entity.Password,
-          Roles: "Admin"
+          ConfirmPassword: entity.ConfirmPassword ? entity.ConfirmPassword : '',
+          Roles: entity.Roles
         }
       );
+      this.selectedItems = entity.Roles;
+    } else {
+      this.formEntity.reset();
     }
-    this.modalRef = this.modalService.show(template);
+    this.modalRef = this.modalService.show(template, { class: 'modal-lg' });
   }
 
   openModalConfirm(template: TemplateRef<any>, entity: any) {
