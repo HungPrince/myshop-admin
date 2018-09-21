@@ -13,7 +13,7 @@ export class ErrorInterceptor  implements HttpInterceptor {
 
   intercept(request: HttpRequest<any>, next: HttpHandler):Observable<any>{
     return next.handle(request).pipe(catchError(err=>{
-      if(err.status = 401){
+      if(err.status == 401){
         this.authService.logout();
         location.reload(true);
       }

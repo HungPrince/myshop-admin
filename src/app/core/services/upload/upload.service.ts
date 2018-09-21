@@ -1,7 +1,5 @@
 import { Injectable } from '@angular/core';
 import { DataService } from '../data.service';
-import { resolve } from 'path';
-import { reject } from 'q';
 
 @Injectable({
   providedIn: 'root'

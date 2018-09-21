@@ -1,7 +1,8 @@
+import { SystemConstant } from './../../core/constants/constant';
 import { map } from 'rxjs/operators';
 import { Component, OnInit, TemplateRef, ViewChild, ElementRef, ViewChildren, ViewContainerRef } from '@angular/core';
 import { DataService } from '../../core/services/data.service';
-import { BsModalService } from 'ngx-bootstrap/modal';
+import { BsModalService, ModalDirective } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { FormHelper } from '../../core/helpers/form.helper';
@@ -33,12 +34,15 @@ export class UserComponent implements OnInit {
   bsConfig: Partial<BsDatepickerConfig>;
   private avatar: ElementRef;
   @ViewChild(BsDatepickerDirective) bsDatepicker: BsDatepickerDirective;
+  @ViewChild('staticModal') staticModal: ModalDirective;
   @ViewChild('avatar') set content(content: ElementRef) {
     this.avatar = content;
   }
   dropdownList = [];
   selectedItems = [];
   dropdownSettings = {};
+
+  BASE_FOLDER = SystemConstant.BASE_URL;
 
   private emailRegex = "^[a-z0-9]+(\.[_a-z0-9]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,15})$";
   private phoneRegex = "^(01[2689]|09)[0-9]{8}$"
@@ -50,7 +54,6 @@ export class UserComponent implements OnInit {
     private formHelper: FormHelper,
     private notificationService: NotificationService,
     private uploadService: UploadService,
-    private vcRef: ViewContainerRef
   ) { }
 
   ngOnInit() {
@@ -72,8 +75,8 @@ export class UserComponent implements OnInit {
       Gender: [true],
       BirthDay: ['',],
       Address: ['',],
-      Avatar: ['',],
-      Status: ['',],
+      Avatar: [''],
+      Status: [true],
       Roles: []
     });
   }
@@ -129,36 +132,44 @@ export class UserComponent implements OnInit {
     return this.formHelper.isErrorPattern(this.formEntity, nameInput);
   }
 
-  UploadImage() {
-    let fi = this.avatar.nativeElement;
-    console.log(fi.files);
-    if (fi.files.length > 0) {
-      this.uploadService.postWithFile('/api/upload/saveImage?type=avatar', null, fi.files)
+  saveChange() {
+    if (this.formEntity.valid) {
+      let fi = this.avatar.nativeElement;
+      if (fi.files.length > 0) {
+        this.uploadService.postWithFile('api/upload/saveImage?type=avatar', null, fi.files).then(res => {
+          if (res) {
+            this.formEntity.value.Avatar = res;
+            this.saveData();
+          }
+        })
+      } else {
+        this.saveData();
+      }
     }
   }
 
-  saveChange() {
-    if (this.formEntity.valid) {
-      this.formEntity.value.roles = [{ Admin: "Admin" }];
-
-      let data: any = JSON.stringify(this.formEntity.value);
-      let id = this.formEntity.value.Id;
-      let uri = id ? "api/user/update" : "api/user/add";
-      let index = this.entities.findIndex(x => x.Id == id);
-      if (id) {
-        this.dataService.putData(uri, data).subscribe(res => {
-          this.entities[index] = { Id: res.Id, Name: res.Name, Description: res.Description };
-          this.modalRef.hide();
-          this.notificationService.printSuccessMessage(MessageContstants.UPDATED_OK_MSG);
-        }, err => console.log(err));
-      } else {
-        this.dataService.postData(uri, data).subscribe(res => {
-          this.entities.push(res);
-          this.totalRows++;
-          this.modalRef.hide();
-          this.notificationService.printSuccessMessage(MessageContstants.CREATED_OK_MSG);
-        }, err => console.log(err))
-      }
+  saveData() {
+    let id = this.formEntity.value.Id;
+    let uri = id ? "api/user/update" : "api/user/add";
+    this.selectedItems.forEach(element => {
+      this.formEntity.value.Roles.push(element.Name);
+    });
+    let data = JSON.stringify(this.formEntity.value);
+    console.log(data);
+    if (id) {
+      this.dataService.putData(uri, data).subscribe(res => {
+        let index = this.entities.findIndex(x => x.Id == id);
+        this.entities[index] = { Id: res.Id, Name: res.Name, Description: res.Description };
+        this.modalRef.hide();
+        this.notificationService.printSuccessMessage(MessageContstants.UPDATED_OK_MSG);
+      });
+    } else {
+      this.dataService.postData(uri, data).subscribe(res => {
+        this.entities.push(res);
+        this.totalRows++;
+        this.modalRef.hide();
+        this.notificationService.printSuccessMessage(MessageContstants.CREATED_OK_MSG);
+      });
     }
   }
 
@@ -177,9 +188,7 @@ export class UserComponent implements OnInit {
     }
   }
 
-  openModal(template: TemplateRef<any>, entity: any) {
-    this.vcRef.createEmbeddedView(template, this.avatar);
-
+  openModal(entity: any) {
     if (entity) {
       this.formEntity.setValue(
         {
@@ -202,7 +211,7 @@ export class UserComponent implements OnInit {
     } else {
       this.formEntity.reset();
     }
-    this.modalRef = this.modalService.show(template, { class: 'modal-lg' });
+    this.staticModal.show();
   }
 
   openModalConfirm(template: TemplateRef<any>, entity: any) {
