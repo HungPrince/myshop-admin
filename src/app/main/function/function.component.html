@@ -1,3 +1,42 @@
-<p>
-  function works!
-</p>
+<div class="page-title">
+  <div class="title_left">
+    <h3>Danh sách chức năng</h3>
+  </div>
+
+  <div class="title_right">
+    <div class="col-md-5 col-sm-5 col-xs-12 form-group pull-right top_search">
+      <div class="input-group">
+        <input type="text" class="form-control" (keyup.enter)="loadData()" [(ngModel)]="filter" name="filter"
+          placeholder="Gõ tên người dùng...">
+        <span class="input-group-btn">
+          <button class="btn btn-default" type="button" (click)="loadData()">Tìm!</button>
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="clearfix"></div>
+<div class="row">
+  <div class="col-md-12 col-sm-12 col-xs-12">
+    <div class="x_panel">
+      <div class="x_title">
+        <ul class="nav navbar-right panel_toolbox">
+          <li>
+            <button class="btn btn-success" (click)="openModal(null)">Add</button>
+          </li>
+        </ul>
+        <div class="clearfix"></div>
+      </div>
+      <div class="x_content">
+        <tree-root #treeFunction [nodes]="_functionHierachy">
+          <ng-template #treeNodeTemplate let-node let-index="index">
+            <div><span>{{ node.data.Name }}</span></div>
+            <button class="btn btn-xs btn-primary" (click)="showEdit(node.data.ID)"> <i class="fa fa-pencil-square-o"
+                aria-hidden="true"></i></button>
+            <button class="btn btn-xs btn-danger" (click)="delete(node.data.ID)"><i class="fa fa-trash" aria-hidden="true"></i></button>
+          </ng-template>
+        </tree-root>
+      </div>
+    </div>
+  </div>
+</div>

@@ -2,3 +2,8 @@
   padding: 5px;
   margin-top: 5px;
 }
+
+.col-image {
+  width: 80px;
+  height: 80px;
+}

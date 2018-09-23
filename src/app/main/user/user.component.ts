@@ -1,18 +1,18 @@
 import { SystemConstant } from './../../core/constants/constant';
 import { map } from 'rxjs/operators';
-import { Component, OnInit, TemplateRef, ViewChild, ElementRef, ViewChildren, ViewContainerRef } from '@angular/core';
+import { Component, OnInit, TemplateRef, ViewChild, ElementRef, ViewChildren, ViewContainerRef, Renderer2 } from '@angular/core';
 import { DataService } from '../../core/services/data.service';
 import { BsModalService, ModalDirective } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, AbstractControl, FormControl } from '@angular/forms';
 import { FormHelper } from '../../core/helpers/form.helper';
 import { NotificationService } from '../../core/services/notification.service';
 import { MessageContstants } from '../../core/constants/messages';
 import { BsDatepickerDirective } from 'ngx-bootstrap/datepicker';
 import { BsDatepickerConfig } from 'ngx-bootstrap/datepicker';
-import * as moment from "moment";
 import { PasswordValidator } from '../../core/helpers/validators/password.validator';
 import { UploadService } from '../../core/services/upload/upload.service';
+import { MomentHelper } from '../../core/helpers/moment.helper';
 
 @Component({
   selector: 'app-user',
@@ -32,12 +32,9 @@ export class UserComponent implements OnInit {
 
   bsValue = new Date();
   bsConfig: Partial<BsDatepickerConfig>;
-  private avatar: ElementRef;
   @ViewChild(BsDatepickerDirective) bsDatepicker: BsDatepickerDirective;
   @ViewChild('staticModal') staticModal: ModalDirective;
-  @ViewChild('avatar') set content(content: ElementRef) {
-    this.avatar = content;
-  }
+  @ViewChild('avatar') avatar: ElementRef;
   dropdownList = [];
   selectedItems = [];
   dropdownSettings = {};
@@ -54,6 +51,8 @@ export class UserComponent implements OnInit {
     private formHelper: FormHelper,
     private notificationService: NotificationService,
     private uploadService: UploadService,
+    private momentHelper: MomentHelper,
+    private render :  Renderer2
   ) { }
 
   ngOnInit() {
@@ -69,8 +68,8 @@ export class UserComponent implements OnInit {
       FullName: ['', [Validators.required, Validators.minLength(4)]],
       UserName: ['', [Validators.required, Validators.minLength(4)]],
       Email: ['', [Validators.required, Validators.pattern(this.emailRegex)]],
-      Password: ['', [Validators.required]],
-      ConfirmPassword: ['', Validators.required],
+      Password: ['', [Validators.required, Validators.pattern(this.passwordRegex)]],
+      ConfirmPassword: ['', [Validators.required, Validators.pattern(this.passwordRegex)]],
       PhoneNumber: ['', Validators.pattern(this.phoneRegex)],
       Gender: [true],
       BirthDay: ['',],
@@ -99,7 +98,6 @@ export class UserComponent implements OnInit {
       this.totalRows = data.TotalRows;
       this.pageIndex = data.PageIndex;
       this.pageSize = data.PageSize;
-      console.log(this.entities);
     })
   }
 
@@ -132,6 +130,14 @@ export class UserComponent implements OnInit {
     return this.formHelper.isErrorPattern(this.formEntity, nameInput);
   }
 
+  selectImage() {
+    let reader = new FileReader();
+    reader.onload = (e: any) => {
+      this.render.selectRootElement("#previewImage").src = e.target.result;
+    }
+    reader.readAsDataURL(this.avatar.nativeElement.files[0]);
+  }
+
   saveChange() {
     if (this.formEntity.valid) {
       let fi = this.avatar.nativeElement;
@@ -151,23 +157,24 @@ export class UserComponent implements OnInit {
   saveData() {
     let id = this.formEntity.value.Id;
     let uri = id ? "api/user/update" : "api/user/add";
-    this.selectedItems.forEach(element => {
-      this.formEntity.value.Roles.push(element.Name);
+    var arr = this.formEntity.value.Roles;
+    this.formEntity.value.Roles = arr.map(x => {
+      return x.Name ? x.Name : x
     });
+    this.formEntity.value.BirthDay = this.momentHelper.convertDateMMDDYYYY(this.formEntity.value.BirthDay);
     let data = JSON.stringify(this.formEntity.value);
-    console.log(data);
     if (id) {
       this.dataService.putData(uri, data).subscribe(res => {
         let index = this.entities.findIndex(x => x.Id == id);
-        this.entities[index] = { Id: res.Id, Name: res.Name, Description: res.Description };
-        this.modalRef.hide();
+        this.entities[index] = res;
+        this.staticModal.hide();
         this.notificationService.printSuccessMessage(MessageContstants.UPDATED_OK_MSG);
       });
     } else {
       this.dataService.postData(uri, data).subscribe(res => {
         this.entities.push(res);
         this.totalRows++;
-        this.modalRef.hide();
+        this.staticModal.hide();
         this.notificationService.printSuccessMessage(MessageContstants.CREATED_OK_MSG);
       });
     }
@@ -188,28 +195,37 @@ export class UserComponent implements OnInit {
     }
   }
 
-  openModal(entity: any) {
-    if (entity) {
-      this.formEntity.setValue(
-        {
-          Id: entity.Id,
-          FullName: entity.FullName,
-          PhoneNumber: entity.PhoneNumber,
-          BirthDay: moment(entity.BirthDay).format("DD/MM/YYYY"),
-          Email: entity.Email,
-          Status: entity.Status,
-          Gender: entity.Gender,
-          Avatar: entity.Avatar,
-          Address: entity.Address,
-          UserName: entity.UserName,
-          Password: entity.Password,
-          ConfirmPassword: entity.ConfirmPassword ? entity.ConfirmPassword : '',
-          Roles: entity.Roles
+  openModal(id: string) {
+    if (id) {
+      let uri = `api/user/detail/${id}`;
+      this.dataService.getData(uri).subscribe(entity => {
+        this.formEntity.removeControl('Password');
+        this.formEntity.removeControl('ConfirmPassword');
+        if (entity) {
+          this.formEntity.setValue(
+            {
+              Id: entity.Id,
+              FullName: entity.FullName,
+              PhoneNumber: entity.PhoneNumber,
+              BirthDay: this.momentHelper.convertDateMMDDYYYY(entity.BirthDay),
+              Email: entity.Email,
+              Status: entity.Status,
+              Gender: entity.Gender,
+              Avatar: entity.Avatar,
+              Address: entity.Address,
+              UserName: entity.UserName,
+              Roles: entity.Roles
+            }
+          );
         }
-      );
-      this.selectedItems = entity.Roles;
+      })
     } else {
+      if (!this.formEntity.controls['Password']) {
+        this.formEntity.addControl('Password', new FormControl('', [Validators.required, Validators.pattern(this.passwordRegex)]));
+        this.formEntity.addControl('ConfirmPassword', new FormControl('', [Validators.required, Validators.pattern(this.passwordRegex)]));
+      }
       this.formEntity.reset();
+      this.formEntity.value.Gender = true;
     }
     this.staticModal.show();
   }

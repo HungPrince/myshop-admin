@@ -14,7 +14,7 @@
         <!-- menu profile quick info -->
         <div class="profile clearfix">
           <div class="profile_pic">
-            <img src="{{user.Avatar}}" alt="..." class="img-circle profile_img">
+            <img src="{{BASE_FOLDER + user.Avatar}}" alt="..." class="img-circle profile_img">
           </div>
           <div class="profile_info">
             <span>Welcome,</span>
@@ -201,7 +201,7 @@
           <ul class="nav navbar-nav navbar-right">
             <li class="" appcustomdropdown [menuName]="'.dropdown-usermenu'">
               <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                <img src="{{user.Avatar}}" alt="">{{user.FullName}}
+                <img src="{{BASE_FOLDER + user.Avatar}}" alt="">{{user.FullName}}
                 <span class=" fa fa-angle-down"></span>
               </a>
               <ul class="dropdown-menu dropdown-usermenu pull-right">
@@ -233,7 +233,7 @@
                 <li>
                   <a>
                     <span class="image">
-                      <img src="{{user.Avatar}}" alt="Profile Image" />
+                      <img src="{{BASE_FOLDER + user.Avatar}}" alt="Profile Image" />
                     </span>
                     <span>
                       <span>John Smith</span>
@@ -247,7 +247,7 @@
                 <li>
                   <a>
                     <span class="image">
-                      <img src="{{user.Avatar}}" alt="Profile Image" />
+                      <img src="{{BASE_FOLDER + user.Avatar}}" alt="Profile Image" />
                     </span>
                     <span>
                       <span>John Smith</span>
@@ -261,7 +261,7 @@
                 <li>
                   <a>
                     <span class="image">
-                      <img src="{{user.Avatar}}" alt="Profile Image" />
+                      <img src="{{BASE_FOLDER + user.Avatar}}" alt="Profile Image" />
                     </span>
                     <span>
                       <span>John Smith</span>
@@ -275,7 +275,7 @@
                 <li>
                   <a>
                     <span class="image">
-                      <img src="{{user.Avatar}}" alt="Profile Image" />
+                      <img src="{{BASE_FOLDER + user.Avatar}}" alt="Profile Image" />
                     </span>
                     <span>
                       <span>John Smith</span>

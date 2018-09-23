@@ -5,6 +5,7 @@ import { MainComponent } from './main.component';
 import { UserModule } from './user/user.module';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { RoleModule } from './role/role.module';
+import { FunctionModule } from './function/function.module';
 import { AuthGuard } from '../core/services/common/auth.guard';
 
 const mainRoutes: Routes = [
@@ -18,6 +19,9 @@ const mainRoutes: Routes = [
       },
       {
         path: 'role', loadChildren: './role/role.module#RoleModule'
+      },
+      {
+        path: 'function', loadChildren: './function/function.module#FunctionModule'
       }
     ]
   }
@@ -29,6 +33,7 @@ const mainRoutes: Routes = [
     UserModule,
     DashboardModule,
     RoleModule,
+    FunctionModule,
     RouterModule.forChild(mainRoutes)
   ],
   exports: [

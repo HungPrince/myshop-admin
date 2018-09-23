@@ -6,7 +6,8 @@
   <div class="title_right">
     <div class="col-md-5 col-sm-5 col-xs-12 form-group pull-right top_search">
       <div class="input-group">
-        <input type="text" class="form-control" (keyup.enter)="loadData()" [(ngModel)]="filter" name="filter" placeholder="Gõ tên người dùng...">
+        <input type="text" class="form-control" (keyup.enter)="loadData()" [(ngModel)]="filter" name="filter"
+          placeholder="Gõ tên người dùng...">
         <span class="input-group-btn">
           <button class="btn btn-default" type="button" (click)="loadData()">Tìm!</button>
         </span>
@@ -21,7 +22,7 @@
       <div class="x_title">
         <ul class="nav navbar-right panel_toolbox">
           <li>
-            <button class="btn btn-success" (click)="staticModal.show()">Add</button>
+            <button class="btn btn-success" (click)="openModal(null)">Add</button>
           </li>
         </ul>
         <div class="clearfix"></div>
@@ -49,13 +50,13 @@
               <td>{{entity.FullName}}</td>
               <td>{{entity.Email}}</td>
               <td>{{entity.PhoneNumber}}</td>
-              <td>{{entity.Gender}}</td>
-              <td>{{entity.BirthDay}}</td>
+              <td>{{entity.Gender ? "Male" : "Female"}}</td>
+              <td>{{entity.BirthDay | date : 'dd/MM/yyyy'}}</td>
               <td>{{entity.Address}}</td>
-              <td><img src="{{entity.Avatar}}" alt=""></td>
-              <td>{{entity.status}}</td>
+              <td><img src="{{BASE_FOLDER + entity.Avatar}}" alt="" class="col-image"></td>
+              <td>{{entity.Status ? "Active" : "Lock"}}</td>
               <td>
-                <button class="btn btn-primary" (click)="openModal(entity)"><i class="fa fa-pencil-square-o"></i></button>
+                <button class="btn btn-primary" (click)="openModal(entity.Id)"><i class="fa fa-pencil-square-o"></i></button>
                 <button class="btn btn-danger" (click)="openModalConfirm(templateDelete, entity)"><i class="fa fa-trash"></i></button>
               </td>
             </tr>
@@ -70,7 +71,8 @@
   </div>
 </div>
 
-<div class="modal fade" bsModal #staticModal="bs-modal" [config]="{backdrop: 'static'}" tabindex="-1" role="dialog" aria-labelledby="dialog-static-name">
+<div class="modal fade" bsModal #staticModal="bs-modal" [config]="{backdrop: 'static'}" tabindex="-1" role="dialog"
+  aria-labelledby="dialog-static-name">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
@@ -80,7 +82,8 @@
         </button>
       </div>
       <div class="modal-body">
-        <form [formGroup]="formEntity" class="form-horizontal form-label-left" novalidate (ngSubmit)="saveChange()" *ngIf="formEntity">
+        <form [formGroup]="formEntity" class="form-horizontal form-label-left" novalidate (ngSubmit)="saveChange()"
+          *ngIf="formEntity">
 
           <input type="hidden" id="Id" formControlName="Id" name="Id" class="form-control col-md-7 col-xs-12">
           <div class="form-group">
@@ -119,7 +122,7 @@
               <small [hidden]="!isErrorRequired('Email')" class="text-danger">
                 Email is required field!
               </small>
-              <small [hidden]="isErrorPattern('Email')">
+              <small [hidden]="!isErrorPattern('Email')" class="text-danger">
                 Email incorrect format!
               </small>
             </div>
@@ -129,14 +132,14 @@
             <label class="control-label col-md-3 col-sm-3 col-xs-12">Password
             </label>
             <div class="col-md-6 col-sm-6 col-xs-12">
-              <input type="password" name="Password" formControlName="Password" class="form-control col-md-7 col-xs-12">
+              <input type="password" formControlName="Password" class="form-control col-md-7 col-xs-12">
             </div>
             <div class="col-md-offset-3 col-md-6 col-sm-6 col-xs-12" *ngIf="isError('Password')">
               <small [hidden]="!isErrorRequired('Password')" class="text-danger">
                 Password is required field!
               </small>
-              <small [hidden]="isErrorPattern('Password')">
-                Passwordd incorrect format!
+              <small [hidden]="!isErrorPattern('Password')" class="text-danger">
+                Password incorrect format!
               </small>
             </div>
           </div>
@@ -145,7 +148,7 @@
             <label class="control-label col-md-3 col-sm-3 col-xs-12">Confirm Password
             </label>
             <div class="col-md-6 col-sm-6 col-xs-12">
-              <input type="ConfirmPassword" name="ConfirmPassword" formControlName="ConfirmPassword" class="form-control col-md-7 col-xs-12">
+              <input type="password" name="ConfirmPassword" formControlName="ConfirmPassword" class="form-control col-md-7 col-xs-12">
             </div>
             <div class="col-md-offset-3 col-md-6 col-sm-6 col-xs-12" *ngIf="isError('ConfirmPassword')">
               <small [hidden]="!isErrorRequired('ConfirmPassword')" class="text-danger">
@@ -174,8 +177,8 @@
             <label class="control-label col-md-3 col-sm-3 col-xs-12">BirthDay
             </label>
             <div class="col-md-6 col-sm-6 col-xs-12">
-              <input type="text" class="form-control" #dp="bsDatepicker" [bsConfig]="{ dateInputFormat: 'DD-MM-YYYY' }" bsDatepicker [bsValue]="bsValue"
-                formControlName="BirthDay">
+              <input type="text" class="form-control" #dp="bsDatepicker" [bsConfig]="{ dateInputFormat: 'DD-MM-YYYY' }"
+                bsDatepicker [bsValue]="bsValue" formControlName="BirthDay">
             </div>
           </div>
 
@@ -195,14 +198,18 @@
           <div class="form-group">
             <label class="control-label col-md-3 col-sm-3 col-xs-12">Avatar</label>
             <div class="col-md-6 col-sm-6 col-xs-12">
-              <input type="file" #avatar class="form-control">
+              <input type="file" #avatar class="form-control" (change)="selectImage()">
               <p class="help-block label label-danger"> chỉ hỗ trợ định dạng *.png, *.jpg, *.jpeg </p>
-              <input type="hidden" formControlName="Avatar" name="Avatar" />
+              <input type="hidden" formControlName="Avatar"  name="Avatar" />
             </div>
 
-            <div class="col-md-3 col-sm-3 col-xs-12" *ngIf="formEntity.Avatar">
-              <img [src]="BASE_FOLDER+formEntity.Avatar" width="128" />
+            <div class="col-md-3 col-sm-3 col-xs-12" *ngIf="formEntity.value.Avatar">
+              <img [src]="BASE_FOLDER+formEntity.value.Avatar" width="128" />
             </div>
+            <div class="col-md-3 col-sm-3 col-xs-12" *ngIf="!formEntity.value.Avatar">
+                <img id="previewImage" [src]="" width="128" />
+              </div>
+
           </div>
 
           <div class="form-group" *ngIf="formEntity.Id">
@@ -222,8 +229,8 @@
             <label class="control-label col-md-3 col-sm-3 col-xs-12">Roles
             </label>
             <div class="col-md-6 col-sm-6 col-xs-12">
-              <ng-multiselect-dropdown [placeholder]="'custom placeholder'" [data]="dropdownList" [(ngModel)]="selectedItems" [settings]="dropdownSettings"
-                (onSelect)="onItemSelect($event)" (onSelectAll)="onSelectAll($event)" formControlName="Roles">
+              <ng-multiselect-dropdown [placeholder]="'custom placeholder'" [data]="dropdownList" [(ngModel)]="selectedItems"
+                [settings]="dropdownSettings" formControlName="Roles">
               </ng-multiselect-dropdown>
             </div>
           </div>
@@ -232,11 +239,14 @@
             <label class="control-label col-md-3 col-sm-3 col-xs-12">Gender</label>
             <div class="col-md-6 col-sm-6 col-xs-12">
               <div id="gender" class="btn-group" data-toggle="buttons">
-                <label class="btn btn-default" [ngClass]="{'active':formEntity.value.Gender}" data-toggle-class="btn-primary" data-toggle-passive-class="btn-default">
-                  <input type="radio" formControlName="Gender" value="true" data-parsley-multiple="gender" data-parsley-id="12">
+                <label class="btn btn-default" [ngClass]="{'active':formEntity.value.Gender}" data-toggle-class="btn-primary"
+                  data-toggle-passive-class="btn-default">
+                  <input type="radio" formControlName="Gender" value="true" data-parsley-multiple="gender"
+                    data-parsley-id="12">
                   &nbsp; Male &nbsp;
                 </label>
-                <label class="btn btn-default" [ngClass]="{'active':!formEntity.value.Gender}" data-toggle-class="btn-primary" data-toggle-passive-class="btn-default">
+                <label class="btn btn-default" [ngClass]="{'active':!formEntity.value.Gender}" data-toggle-class="btn-primary"
+                  data-toggle-passive-class="btn-default">
                   <input type="radio" formControlName="Gender" value="false" data-parsley-multiple="gender"> Female
                 </label>
               </div>
@@ -246,7 +256,7 @@
           <div class="ln_solid"></div>
           <div class="form-group">
             <div class="col-md-6 col-sm-6 col-xs-12 col-md-offset-3">
-              <button class="btn btn-primary" type="button" (click)="modalRef.hide()">Cancel</button>
+              <button class="btn btn-primary" type="button" (click)="staticModal.hide()">Cancel</button>
               <button class="btn btn-primary" type="reset" (click)="reset()">Reset</button>
               <button type="submit" class="btn btn-success" [disabled]="!formEntity.valid">Submit</button>
             </div>

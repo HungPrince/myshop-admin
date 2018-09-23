@@ -17,6 +17,7 @@ export class MainComponent {
   user: User;
   sessionId: any;
   token: any;
+  BASE_FOLDER = SystemConstant.BASE_URL;
   constructor(
     private elementRef: ElementRef,
     private authService: AuthService,
