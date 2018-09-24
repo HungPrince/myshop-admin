@@ -8,7 +8,7 @@ import { UtilityService } from '../../core/services/utility.service';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-
+import { Ng4LoadingSpinnerService } from 'ng4-loading-spinner';
 
 @Component({
   selector: 'app-function',
@@ -25,6 +25,8 @@ export class FunctionComponent implements OnInit {
   modalRef: BsModalRef;
   formEntity: FormGroup;
   entityCurrent: any;
+  public permissions: any[];
+  functionId: string;
 
   constructor(
     private dataService: DataService,
@@ -32,7 +34,8 @@ export class FunctionComponent implements OnInit {
     private notificationService: NotificationService,
     private modalService: BsModalService,
     private FormBuilder: FormBuilder,
-    private formHelper: FormHelper) {
+    private formHelper: FormHelper,
+    private spinnerService: Ng4LoadingSpinnerService) {
   }
 
   ngOnInit() {
@@ -65,10 +68,12 @@ export class FunctionComponent implements OnInit {
   }
 
   loadData() {
+    this.spinnerService.show();
     this.dataService.getData(`api/function/getall?filter=${this.filter}`)
       .subscribe((response: any[]) => {
         this._functions = response.filter(x => x.ParentId == null);
         this._functionHierachy = this.utilityService.unFlatten(response);
+        this.spinnerService.hide();
       });
   }
 
@@ -130,5 +135,28 @@ export class FunctionComponent implements OnInit {
   openModalConfirm(template: TemplateRef<any>, entity: any) {
     this.modalRef = this.modalService.show(template);
     this.entityCurrent = entity;
+  }
+
+  public showPermission(templatePermission: TemplateRef<any>, id: any) {
+    this.dataService.getData('api/role/getAllPermission?functionId=' + id).subscribe((response: any[]) => {
+      this.functionId = id;
+      this.permissions = response;
+      this.modalRef = this.modalService.show(templatePermission, { class: 'modal-lg' });
+    });
+  }
+
+  public savePermission(valid: boolean, permissions: any[]) {
+    if (valid) {
+      let data = {
+        Permissions: permissions,
+        FunctionId: this.functionId
+      }
+      this.spinnerService.show()
+      this.dataService.postData('api/role/savePermission', JSON.stringify(data)).subscribe((response: any) => {
+        this.modalRef.hide();
+        this.spinnerService.hide();
+        this.notificationService.printSuccessMessage(response);
+      })
+    }
   }
 }
