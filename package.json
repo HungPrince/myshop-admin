@@ -35,6 +35,7 @@
     "moment": "^2.22.2",
     "ng-gentelella": "^0.2.6",
     "ng-multiselect-dropdown": "^0.2.1",
+    "ng4-loading-spinner": "^1.2.3",
     "ngx-bootstrap": "^3.0.1",
     "npm": "^6.4.1",
     "nprogress": "^0.2.0",

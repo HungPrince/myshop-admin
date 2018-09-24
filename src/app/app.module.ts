@@ -6,6 +6,7 @@ import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { JwtInterceptor } from './core/services/common/jwt.interceptor';
 import { ErrorInterceptor } from './core/services/common/error.interceptor ';
+import { Ng4LoadingSpinnerModule } from 'ng4-loading-spinner';
 
 
 @NgModule({
@@ -15,6 +16,7 @@ import { ErrorInterceptor } from './core/services/common/error.interceptor ';
   imports: [
     BrowserModule,
     AppRoutingModule,
+    Ng4LoadingSpinnerModule.forRoot()
   ],
   providers: [
     HttpClientModule,

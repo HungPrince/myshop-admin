@@ -6,6 +6,8 @@ import { AuthService } from '../core/services/auth.service';
 import { SystemConstant } from '../core/constants/constant';
 import { User } from '../models/user';
 import { Router, NavigationExtras } from '@angular/router';
+import { Ng4LoadingSpinnerService } from 'ng4-loading-spinner';
+
 
 @Component({
   selector: 'app-login',
@@ -18,7 +20,8 @@ export class LoginComponent implements OnInit {
     private formBuilder: FormBuilder,
     private authService: AuthService,
     private router: Router,
-    private localStorage: LocalStorage
+    private localStorage: LocalStorage,
+    private spinnerService: Ng4LoadingSpinnerService
   ) { }
 
   ngOnInit() {
@@ -38,6 +41,7 @@ export class LoginComponent implements OnInit {
   }
 
   login() {
+    this.spinnerService.show();
     this.authService.login(this.loginForm.value.UserName, this.loginForm.value.Password)
       .subscribe((result: any) => {
         let user = new User(result.fullName, result.username, result.email, result.access_token, result.avatar);
@@ -52,6 +56,7 @@ export class LoginComponent implements OnInit {
           queryParamsHandling: 'preserve',
           preserveFragment: true
         };
+        this.spinnerService.hide();
         this.router.navigate([redirectUrl], navigationExtras);
       });
   }

@@ -7,6 +7,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { FormHelper } from '../../core/helpers/form.helper';
 import { NotificationService } from '../../core/services/notification.service';
 import { MessageContstants } from '../../core/constants/messages';
+import { Ng4LoadingSpinnerService } from 'ng4-loading-spinner';
 
 @Component({
   selector: 'app-role',
@@ -29,7 +30,8 @@ export class RoleComponent implements OnInit {
     private modalService: BsModalService,
     private formBuilder: FormBuilder,
     private formHelper: FormHelper,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private spinnerService: Ng4LoadingSpinnerService
   ) { }
 
   ngOnInit() {
@@ -42,11 +44,13 @@ export class RoleComponent implements OnInit {
   }
 
   loadDataRole() {
+    this.spinnerService.show();
     this.dataService.getData(`api/role/getlistpaging?page=${this.pageIndex}&pageSize=${this.pageSize}&filter=${this.filter}`).subscribe(data => {
       this.roles = data.Items;
       this.totalRows = data.TotalRows;
       this.pageIndex = data.PageIndex;
       this.pageSize = data.PageSize;
+      this.spinnerService.hide();
     })
   }
 
@@ -73,19 +77,22 @@ export class RoleComponent implements OnInit {
       let id = this.formRole.value.Id;
       let uri = id ? "api/role/update" : "api/role/add";
       let index = this.roles.findIndex(x => x.Id == id);
+      this.spinnerService.show();
       if (id) {
         this.dataService.putData(uri, data).subscribe(res => {
           this.roles[index] = { Id: res.Id, Name: res.Name, Description: res.Description };
           this.modalRef.hide();
           this.notificationService.printSuccessMessage(MessageContstants.UPDATED_OK_MSG);
-        }, err => console.log(err));
+          this.spinnerService.hide();
+        });
       } else {
         this.dataService.postData(uri, data).subscribe(res => {
           this.roles.push({ Id: res.Id, Name: res.Name, Description: res.Description });
           this.totalRows++;
           this.modalRef.hide();
           this.notificationService.printSuccessMessage(MessageContstants.CREATED_OK_MSG);
-        }, err => console.log(err))
+          this.spinnerService.hide();
+        });
       }
     }
   }
@@ -101,7 +108,7 @@ export class RoleComponent implements OnInit {
         }
         this.modalRef.hide();
         this.notificationService.printSuccessMessage(MessageContstants.DELETED_OK_MSG);
-      }, err => console.log(err));
+      });
     }
   }
 

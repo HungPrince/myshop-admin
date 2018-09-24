@@ -6,8 +6,7 @@
   <div class="title_right">
     <div class="col-md-5 col-sm-5 col-xs-12 form-group pull-right top_search">
       <div class="input-group">
-        <input type="text" class="form-control" (keyup.enter)="loadData()" [(ngModel)]="filter" name="filter"
-          placeholder="Gõ tên người dùng...">
+        <input type="text" class="form-control" (keyup.enter)="loadData()" [(ngModel)]="filter" name="filter" placeholder="Gõ tên người dùng...">
         <span class="input-group-btn">
           <button class="btn btn-default" type="button" (click)="loadData()">Tìm!</button>
         </span>
@@ -22,7 +21,7 @@
       <div class="x_title">
         <ul class="nav navbar-right panel_toolbox">
           <li>
-            <button class="btn btn-success" (click)="openModal(null)">Add</button>
+            <button class="btn btn-success" (click)="openModalAddEdit(template, null)">Add</button>
           </li>
         </ul>
         <div class="clearfix"></div>
@@ -31,12 +30,121 @@
         <tree-root #treeFunction [nodes]="_functionHierachy">
           <ng-template #treeNodeTemplate let-node let-index="index">
             <div><span>{{ node.data.Name }}</span></div>
-            <button class="btn btn-xs btn-primary" (click)="showEdit(node.data.ID)"> <i class="fa fa-pencil-square-o"
+            <button class="btn btn-xs btn-primary" (click)="openModalAddEdit(template, node.data)"> <i class="fa fa-pencil-square-o"
                 aria-hidden="true"></i></button>
-            <button class="btn btn-xs btn-danger" (click)="delete(node.data.ID)"><i class="fa fa-trash" aria-hidden="true"></i></button>
+            <button class="btn btn-xs btn-danger" (click)="openModalConfirm(templateDelete, node.data)"><i class="fa fa-trash" aria-hidden="true"></i></button>
           </ng-template>
         </tree-root>
       </div>
     </div>
   </div>
 </div>
+
+
+<ng-template #template>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left">Form Role</h4>
+    <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
+        <span aria-hidden="true">&times;</span>
+      </button>
+  </div>
+  <div class="modal-body">
+    <form [formGroup]="formEntity" class="form-horizontal form-label-left" novalidate (ngSubmit)="saveChange()" *ngIf="formEntity">
+
+      <div class="form-group">
+        <label class="control-label col-md-3 col-sm-3 col-xs-12">Mã chức năng</label>
+        <div class="col-md-9 col-sm-9 col-xs-12">
+          <input type="text" formControlName="ID"  name="id" class="form-control" />
+          <div *ngIf="isError('ID')">
+            <small [hidden]="!isErrorRequired('ID')" class="text-danger">
+              Bạn phải nhập mã chức năng
+            </small>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="control-label col-md-3 col-sm-3 col-xs-12">Tên chức năng</label>
+        <div class="col-md-9 col-sm-9 col-xs-12">
+          <input type="text" formControlName="Name" name="name" class="form-control" />
+          <div *ngIf="isError('ID')">
+            <small [hidden]="!isErrorMinLength('Name')" class="text-danger">
+            Bạn phải nhập tên ít nhất 3 ký tự
+          </small>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="control-label col-md-3 col-sm-3 col-xs-12">Đường dẫn</label>
+        <div class="col-md-9 col-sm-9 col-xs-12">
+          <input type="text" formControlName="URL" name="url" class="form-control" />
+          <div *ngIf="isError('URL')">
+            <small [hidden]="!isErrorRequired('URL')" class="text-danger">
+              Bạn phải nhập đường dẫn
+            </small>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="control-label col-md-3 col-sm-3 col-xs-12">Thứ tự</label>
+        <div class="col-md-9 col-sm-9 col-xs-12">
+          <input type="number" formControlName="DisplayOrder" name="displayOrder" class="form-control" />
+          <div *ngIf="isError('DisplayOrder')">
+            <small [hidden]="isErrorRequired('DisplayOrder')" class="text-danger">
+               Bạn phải nhập thứ tự
+            </small>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="control-label col-md-3 col-sm-3 col-xs-12">Chức năng cha</label>
+        <div class="col-md-9 col-sm-9 col-xs-12">
+          <select class="form-control" name="parentId" formControlName="ParentId">
+            <option value="">--Chọn chức năng cha--</option>
+            <option *ngFor="let x of _functions" [value]="x.ID">{{x.Name}}</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="control-label col-md-3 col-sm-3 col-xs-12">Icon CSS</label>
+        <div class="col-md-9 col-sm-9 col-xs-12">
+          <input type="text" formControlName="IconCss" name="iconCss" class="form-control" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="control-label col-md-3 col-sm-3 col-xs-12">Trạng thái</label>
+        <div class="col-md-9 col-sm-9 col-xs-12">
+          <div class="checkbox">
+            <label>
+              <input type="checkbox" formControlName="Status" name="status"> Kích hoạt
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="ln_solid"></div>
+      <div class="form-group">
+        <div class="col-md-9 col-sm-9 col-xs-12 col-md-offset-3">
+          <button class="btn btn-primary" type="button" (click)="modalRef.hide()">Cancel</button>
+          <button class="btn btn-primary" type="reset" (click)="reset()">Reset</button>
+          <button type="submit" class="btn btn-success" [disabled]="!formEntity.valid">Submit</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</ng-template>
+
+<ng-template #templateDelete>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left">Confirm Delete</h4>
+    <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
+        <span aria-hidden="true">&times;</span>
+      </button>
+  </div>
+  <div class="modal-body text-center">
+    <h4>Do you want delete this record?</h4>
+    <div class="ln_solid"></div>
+    <button type="button" class="btn btn-default" (click)="delete()">Yes</button>
+    <button type="button" class="btn btn-primary" (click)="modalRef.hide()">No</button>
+  </div>
+</ng-template>

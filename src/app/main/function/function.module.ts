@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FunctionComponent } from './function.component';
 import { TreeModule } from 'angular-tree-component';
 import { Routes, RouterModule } from '@angular/router';
+import {  ModalModule  } from 'ngx-bootstrap';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 const functionRoutes: Routes = [
@@ -20,7 +21,8 @@ const functionRoutes: Routes = [
     FormsModule,
     ReactiveFormsModule,
     TreeModule.forRoot(),
-    RouterModule.forChild(functionRoutes)
+    RouterModule.forChild(functionRoutes), 
+    ModalModule.forRoot()
   ],
   declarations: [FunctionComponent]
 })
