@@ -22,7 +22,7 @@
       <div class="x_title">
         <ul class="nav navbar-right panel_toolbox">
           <li>
-            <button class="btn btn-success" (click)="openModal(null)">Add</button>
+            <button *ngIf="authService.hasPermission('USER','create')" class="btn btn-success" (click)="openModal(null)">Add</button>
           </li>
         </ul>
         <div class="clearfix"></div>
@@ -56,8 +56,8 @@
               <td><img src="{{BASE_FOLDER + entity.Avatar}}" alt="" class="col-image"></td>
               <td>{{entity.Status ? "Active" : "Lock"}}</td>
               <td>
-                <button class="btn btn-primary" (click)="openModal(entity.Id)"><i class="fa fa-pencil-square-o"></i></button>
-                <button class="btn btn-danger" (click)="openModalConfirm(templateDelete, entity)"><i class="fa fa-trash"></i></button>
+                <button *ngIf="authService.hasPermission('USER','update')" class="btn btn-primary" (click)="openModal(entity.Id)"><i class="fa fa-pencil-square-o"></i></button>
+                <button *ngIf="authService.hasPermission('USER','delete')" class="btn btn-danger" (click)="openModalConfirm(templateDelete, entity)"><i class="fa fa-trash"></i></button>
               </td>
             </tr>
           </tbody>

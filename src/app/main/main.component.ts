@@ -5,6 +5,9 @@ import { UrlConstants } from '../core/constants/url';
 import { User } from '../models/user';
 import { SystemConstant } from '../core/constants/constant';
 import { map } from 'rxjs/operators';
+import { DataService } from '../core/services/data.service';
+
+declare var $;
 
 @Component({
   selector: 'app-main',
@@ -13,14 +16,17 @@ import { map } from 'rxjs/operators';
 })
 
 export class MainComponent {
-
+  BASE_FOLDER = SystemConstant.BASE_URL;
   user: User;
   sessionId: any;
   token: any;
-  BASE_FOLDER = SystemConstant.BASE_URL;
+  functions: any[];
+  loadScript: boolean = false;
+
   constructor(
     private elementRef: ElementRef,
     private authService: AuthService,
+    private dataService: DataService,
     private router: Router,
     private route: ActivatedRoute) {
     if (localStorage.getItem(SystemConstant.USER_CURRENT)) {
@@ -35,16 +41,13 @@ export class MainComponent {
 
     this.token = this.route
       .fragment
-      .pipe(map(fragment => fragment || 'None')).subscribe()
+      .pipe(map(fragment => fragment || 'None')).subscribe();
   }
 
   ngAfterViewInit() {
     const body = document.getElementsByTagName("body")[0];
     body.classList.remove("login");
     body.classList.add("nav-md");
-    let s = document.createElement('script');
-    s.src = "../assets/js/custom.js";
-    this.elementRef.nativeElement.appendChild(s);
   }
 
   logOut() {

@@ -40,7 +40,8 @@
               "node_modules/popper/index.js",
               "node_modules/fastclick/lib/fastclick.js",
               "node_modules/nprogress/nprogress.js",
-              "node_modules/smartresize.js/index.js"
+              "node_modules/smartresize.js/index.js",
+              "src/assets/js/custom.min.js"
             ]
           },
           "configurations": {

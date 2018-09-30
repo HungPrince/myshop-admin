@@ -4,10 +4,9 @@ import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
-import { JwtInterceptor } from './core/services/common/jwt.interceptor';
-import { ErrorInterceptor } from './core/services/common/error.interceptor ';
+import { JwtInterceptor } from './core/common/jwt.interceptor';
+import { ErrorInterceptor } from './core/common/error.interceptor';
 import { Ng4LoadingSpinnerModule } from 'ng4-loading-spinner';
-
 
 @NgModule({
   declarations: [

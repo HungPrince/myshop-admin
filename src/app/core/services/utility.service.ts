@@ -4,7 +4,9 @@ import { Injectable } from '@angular/core';
 
 export class UtilityService {
 
-  constructor() { }
+  constructor() {
+    this.TestUnFlaten();
+  }
 
   unFlatten = (arr: any[]): any[] => {
     let map = {};
@@ -20,6 +22,24 @@ export class UtilityService {
       }
     }
     return roots;
+  }
+
+  TestUnFlaten() {
+    let arr = [
+      {
+        ID: '1', Name: 'A', ParentId: null
+      },
+      {
+        ID: '2', Name: 'B', ParentId: '1'
+      },
+      {
+        ID: '3', Name: 'C', ParentId: '2'
+      },
+      {
+        ID: '4', Name: 'D', ParentId: '1'
+      },
+    ]
+    this.unFlatten(arr);
   }
 
 }

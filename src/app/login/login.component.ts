@@ -44,7 +44,7 @@ export class LoginComponent implements OnInit {
     this.spinnerService.show();
     this.authService.login(this.loginForm.value.UserName, this.loginForm.value.Password)
       .subscribe((result: any) => {
-        let user = new User(result.fullName, result.username, result.email, result.access_token, result.avatar);
+        let user = new User(result.fullName, result.username, result.email, result.access_token, result.avatar, result.permissions, result.roles);
         localStorage.setItem(SystemConstant.USER_CURRENT, JSON.stringify(user));
         if (this.loginForm.value.Remember) {
           this.localStorage.setItem(SystemConstant.REMEMBER_ACCOUNT, this.loginForm.value).subscribe((data) => { console.log(data) });

@@ -1,5 +1,4 @@
 import { SystemConstant } from './../../core/constants/constant';
-import { map } from 'rxjs/operators';
 import { Component, OnInit, TemplateRef, ViewChild, ElementRef, ViewChildren, ViewContainerRef, Renderer2 } from '@angular/core';
 import { DataService } from '../../core/services/data.service';
 import { BsModalService, ModalDirective } from 'ngx-bootstrap/modal';
@@ -10,9 +9,9 @@ import { NotificationService } from '../../core/services/notification.service';
 import { MessageContstants } from '../../core/constants/messages';
 import { BsDatepickerDirective } from 'ngx-bootstrap/datepicker';
 import { BsDatepickerConfig } from 'ngx-bootstrap/datepicker';
-import { PasswordValidator } from '../../core/helpers/validators/password.validator';
 import { UploadService } from '../../core/services/upload/upload.service';
 import { MomentHelper } from '../../core/helpers/moment.helper';
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-user',
@@ -46,6 +45,7 @@ export class UserComponent implements OnInit {
   private passwordRegex = "(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[$@$!%*?&])[A-Za-z\d$@$!%*?&].{8,}";
   constructor(
     private dataService: DataService,
+    public  authService: AuthService,
     private modalService: BsModalService,
     private formBuilder: FormBuilder,
     private formHelper: FormHelper,

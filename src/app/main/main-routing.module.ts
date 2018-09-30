@@ -6,7 +6,7 @@ import { UserModule } from './user/user.module';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { RoleModule } from './role/role.module';
 import { FunctionModule } from './function/function.module';
-import { AuthGuard } from '../core/services/common/auth.guard';
+import { AuthGuard } from '../core/common/auth.guard';
 
 const mainRoutes: Routes = [
   {

@@ -1,8 +1,8 @@
-import { NotificationService } from './../notification.service';
+import { NotificationService } from '../services/notification.service';
 import { Injectable } from "@angular/core";
 import { HttpInterceptor, HttpRequest, HttpHandler } from "@angular/common/http";
 import { Observable, throwError } from "rxjs";
-import { AuthService } from "../auth.service";
+import { AuthService } from "../services/auth.service";
 import { catchError } from 'rxjs/operators';
 import { Ng4LoadingSpinnerService } from 'ng4-loading-spinner';
 
@@ -21,7 +21,7 @@ export class ErrorInterceptor implements HttpInterceptor {
         location.reload(true);
       }
       const error = err.error.message || err.statusText;
-      this.notificationService.printErrorMessage(err);
+      this.notificationService.printErrorMessage(error);
       this.spinnerService.hide();
       return throwError(error);
     }))
