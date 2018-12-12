@@ -24,7 +24,10 @@ const mainRoutes: Routes = [
         path: 'function', loadChildren: './function/function.module#FunctionModule'
       },
       {
-        path: 'category', loadChildren: './category/category.module#CategoryModule'
+        path: 'product-category', loadChildren: './category/category.module#CategoryModule'
+      },
+      {
+        path: 'product', loadChildren: './product/product.module#ProductModule'
       }
     ]
   }

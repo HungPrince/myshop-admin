@@ -7,10 +7,12 @@ import { AppRoutingModule } from './app-routing.module';
 import { JwtInterceptor } from './core/common/jwt.interceptor';
 import { ErrorInterceptor } from './core/common/error.interceptor';
 import { Ng4LoadingSpinnerModule } from 'ng4-loading-spinner';
+import { SimpleTinyComponent } from './shares/simple-tiny/simple-tiny.component';
 
 @NgModule({
   declarations: [
     AppComponent,
+    SimpleTinyComponent,
   ],
   imports: [
     BrowserModule,

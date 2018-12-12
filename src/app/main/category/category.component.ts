@@ -1,14 +1,10 @@
 import { MessageContstants } from './../../core/constants/messages';
-import { NotificationService } from './../../core/services/notification.service';
-import { FormHelper } from './../../core/helpers/form.helper';
-import { Component, OnInit, ViewChild, TemplateRef } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { TreeComponent } from 'angular-tree-component';
-import { DataService } from '../../core/services/data.service';
-import { UtilityService } from '../../core/services/utility.service';
-import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
-import { BsModalService } from 'ngx-bootstrap/modal';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Ng4LoadingSpinnerService } from 'ng4-loading-spinner';
+import { UtilityService } from './../../core/services/utility.service';
+import { DataService } from './../../core/services/data.service';
+import { NotificationService } from './../../core/services/notification.service';
+import { ModalDirective } from 'ngx-bootstrap/modal';
 
 @Component({
   selector: 'app-category',
@@ -17,33 +13,88 @@ import { Ng4LoadingSpinnerService } from 'ng4-loading-spinner';
 })
 export class CategoryComponent implements OnInit {
 
-  pageIndex: number = 1;
-  pageSize: number = 20;
-  totalRows: number;
-  filter: string = "";
-  private treeCategory: TreeComponent;
-  public _functionHierachy: any[];
-  public _categoriess: any[];
-  modalRef: BsModalRef;
-  formEntity: FormGroup;
-  entityCurrent: any;
-  public permissions: any[];
-  categoryId: string;
-
+  @ViewChild('addEditModal') public addEditModal: ModalDirective;
+  @ViewChild(TreeComponent)
+  private treeProductCategory: TreeComponent;
+  public filter: string = '';
+  public entity: any;
+  public functionId: string;
+  public _productCategoryHierachy: any[];
+  public _productCategories: any[];
   constructor(
-    private dataService: DataService,
-    private utilityService: UtilityService,
+    private _dataService: DataService,
     private notificationService: NotificationService,
-    private modalService: BsModalService,
-    private FormBuilder: FormBuilder,
-    private formHelper: FormHelper,
-    private spinnerService: Ng4LoadingSpinnerService
+    private utilityService: UtilityService,
   ) { }
 
   ngOnInit() {
-    this.dataService.getData(`api/categories/getall?keyWord=${this.filter}&page=${this.pageIndex}&pageSize=${this.pageSize}`)
-      .subscribe(result => {
-        console.log(result);
+    this.search();
+    this.getListForDropdown();
+  }
+  public createAlias() {
+    this.entity.Alias = this.utilityService.MakeSeoTitle(this.entity.Name);
+  }
+  //Load data
+  public search() {
+    this._dataService.getData('/api/category/getall?filter=' + this.filter)
+      .subscribe((response: any[]) => {
+        this._productCategoryHierachy = this.utilityService.Unflatten2(response);
+        this._productCategories = response;
       });
+  }
+  public getListForDropdown() {
+    this._dataService.getData('/api/category/getallhierachy')
+      .subscribe((response: any[]) => {
+        this._productCategories = response;
+      });
+  }
+  //Show add form
+  public showAdd() {
+    this.entity = {};
+    this.addEditModal.show();
+  }
+  //Show edit form
+  public showEdit(id: string) {
+    this._dataService.getData('/api/category/detail/' + id).subscribe((response: any) => {
+      this.entity = response;
+      this.addEditModal.show();
+    });
+  }
+
+  //Action delete
+  public deleteConfirm(id: string): void {
+    this._dataService.deleteData(`/api/category/delete/${id}`).subscribe((response: any) => {
+      this.notificationService.printSuccessMessage(MessageContstants.DELETED_OK_MSG);
+      this.search();
+    });
+  }
+  //Click button delete turn on confirm
+  public delete(id: string) {
+    this.notificationService.printConfirmationDialog(MessageContstants.CONFIRM_DELETE_MSG, () => this.deleteConfirm(id));
+  }
+  //Save change for modal popup
+  public saveChanges(valid: boolean) {
+    if (valid) {
+      if (this.entity.ID == undefined) {
+        this._dataService.postData('/api/category/add', JSON.stringify(this.entity)).subscribe((response: any) => {
+          this.search();
+          this.addEditModal.hide();
+          this.notificationService.printSuccessMessage(MessageContstants.CREATED_OK_MSG);
+        });
+      }
+      else {
+        this._dataService.putData('/api/category/update', JSON.stringify(this.entity)).subscribe((response: any) => {
+          this.search();
+          this.addEditModal.hide();
+          this.notificationService.printSuccessMessage(MessageContstants.UPDATED_OK_MSG);
+        });
+
+      }
+    }
+
+  }
+
+  public onSelectedChange($event) {
+    console.log($event);
   }
 }
